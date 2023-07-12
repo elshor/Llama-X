@@ -160,6 +160,8 @@ class DataCollatorForSupervisedDataset(object):
 
     def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
         input_ids, labels = tuple([instance[key] for instance in instances] for key in ("input_ids", "labels"))
+        print('in data collator. input_ids len', len(input_ids),'labels',len(labels))
+        print('ids',input_ids,'labels',labels)
         input_ids = [torch.tensor(x) for x in input_ids]
         input_ids = torch.nn.utils.rnn.pad_sequence(
             input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id
@@ -217,15 +219,14 @@ def train():
             tokenizer=tokenizer,
             model=model,
         )
-    if "starcoder" in model_args.model_name_or_path:
-        tokenizer.add_special_tokens(
-            {
-                "eos_token": DEFAULT_EOS_TOKEN,
-                "bos_token": DEFAULT_BOS_TOKEN,
-                "unk_token": DEFAULT_UNK_TOKEN,
-                "pad_token": DEFAULT_PAD_TOKEN,
-            }
-        )
+    tokenizer.add_special_tokens(
+        {
+            "eos_token": DEFAULT_EOS_TOKEN,
+            "bos_token": DEFAULT_BOS_TOKEN,
+            "unk_token": DEFAULT_UNK_TOKEN,
+            "pad_token": DEFAULT_PAD_TOKEN,
+        }
+    )
     raw_train_datasets = load_dataset('json', data_files=data_args.data_path, cache_dir=training_args.cache_dir)
     if training_args.local_rank > 0: 
         torch.distributed.barrier()
@@ -244,7 +245,7 @@ def train():
         print('dataset is',train_dataset,'length: ', len(train_dataset))
     
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
-    data_module = dict(train_dataset=train_dataset['train'], eval_dataset=None)
+    data_module = dict(train_dataset=train_dataset['train'], eval_dataset=None, data_collator=data_collator)
 
     #Tell Trainer not to attempt DataParallel
     model.is_parallelizable = True
