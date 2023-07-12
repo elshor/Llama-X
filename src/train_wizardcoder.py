@@ -160,8 +160,11 @@ class DataCollatorForSupervisedDataset(object):
 
     def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
         input_ids, labels = tuple([instance[key] for instance in instances] for key in ("input_ids", "labels"))
-        print('in data collator. input_ids len', len(input_ids),'labels',len(labels))
-        print('ids',input_ids,'labels',labels)
+        print('labels', labels)
+        print(
+            'in data collator. input_ids', 
+            input_ids.shape(),
+            'labels',labels.shape())
         input_ids = [torch.tensor(x) for x in input_ids]
         input_ids = torch.nn.utils.rnn.pad_sequence(
             input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id
