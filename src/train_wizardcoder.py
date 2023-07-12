@@ -184,7 +184,9 @@ def train_tokenize_function(examples, tokenizer):
 def train():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    training_args.train_batch_size = 4
+    print('training args', training_args)
+    print('model args', model_args)
+    print('data_args', data_args)
     print('loading model ...')
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path,
