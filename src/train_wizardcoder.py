@@ -193,8 +193,8 @@ def train():
         cache_dir=training_args.cache_dir,
     )
     print('... model loaded. Now using peft')
-    model = get_peft_model(model, peft_config)
-    model.print_trainable_parameters()
+    #model = get_peft_model(model, peft_config)
+    #model.print_trainable_parameters()
 
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
