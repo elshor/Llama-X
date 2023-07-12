@@ -29,7 +29,16 @@ import utils
 
 from peft import LoraConfig, TaskType, get_peft_model
 
-peft_config = LoraConfig(task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1)
+peft_config = LoraConfig(
+    
+    bias="none",
+    task_type="CAUSAL_LM",
+    target_modules = ["c_proj", "c_attn", "q_attn"],
+    inference_mode=False, 
+    r=8, 
+    lora_alpha=32, 
+    lora_dropout=0.05
+)
 
 wandb.init(project="n5")
 
@@ -193,8 +202,8 @@ def train():
         cache_dir=training_args.cache_dir,
     )
     print('... model loaded. Now using peft')
-    #model = get_peft_model(model, peft_config)
-    #model.print_trainable_parameters()
+    model = get_peft_model(model, peft_config)
+    model.print_trainable_parameters()
 
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
