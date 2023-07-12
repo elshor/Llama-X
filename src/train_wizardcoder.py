@@ -246,7 +246,7 @@ def train():
         print('dataset is',train_dataset,'length: ', len(train_dataset))
     
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
-    data_module = dict(train_dataset=train_dataset, eval_dataset=None, data_collator=data_collator)
+    data_module = dict(train_dataset=train_dataset['train'], eval_dataset=None, data_collator=data_collator)
 
     #Tell Trainer not to attempt DataParallel
     model.is_parallelizable = True
