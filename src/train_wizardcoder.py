@@ -224,9 +224,7 @@ def train():
         torch.distributed.barrier()
     
     if training_args.local_rank == 0:
-        print(len(train_dataset))
-        for index in random.sample(range(len(train_dataset)), 3):
-            print(f"Sample {index} of the training set: {train_dataset[index]}.")
+        print('dataset is',train_dataset,'length: ', len(train_dataset))
     
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
     data_module = dict(train_dataset=train_dataset, eval_dataset=None, data_collator=data_collator)
