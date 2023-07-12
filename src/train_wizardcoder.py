@@ -27,6 +27,10 @@ from transformers import Trainer
 from datasets import load_dataset
 import utils
 
+from peft import LoraConfig, TaskType, get_peft_model
+
+peft_config = LoraConfig(task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1)
+
 wandb.init(project="n5")
 
 IGNORE_INDEX = -100
@@ -186,7 +190,10 @@ def train():
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
     )
-    print('... model loaded')
+    print('... model loaded. Now using peft')
+    model = get_peft_model(model, peft_config)
+    model.print_trainable_parameters()
+
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
