@@ -193,16 +193,14 @@ def train_tokenize_function(examples, tokenizer):
 def train():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    print('training args', training_args)
-    print('model args', model_args)
-    print('data_args', data_args)
     print('loading model ...')
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
     )
-    print('... model loaded. Now using peft')
+    print('... model loaded. Now trasforming to  peft')
     model = get_peft_model(model, peft_config)
+    print('model is', model)
     model.print_trainable_parameters()
 
 
@@ -246,7 +244,7 @@ def train():
         print('dataset is',train_dataset,'length: ', len(train_dataset))
     
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
-    data_module = dict(train_dataset=train_dataset['train'], eval_dataset=None, data_collator=data_collator)
+    data_module = dict(train_dataset=train_dataset['train'], eval_dataset=None)
 
     #Tell Trainer not to attempt DataParallel
     model.is_parallelizable = True
