@@ -193,14 +193,13 @@ def train_tokenize_function(examples, tokenizer):
 def train():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    print('loading model ...')
+    print(training_args.local_rank, 'loading model ...')
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
     )
-    print('... model loaded. Now trasforming to  peft')
+    print(training_args.local_rank, '... model loaded. Now trasforming to  peft')
     model = get_peft_model(model, peft_config)
-    print('model is', model)
     model.print_trainable_parameters()
 
 
