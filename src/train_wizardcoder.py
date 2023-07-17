@@ -194,10 +194,15 @@ def train_tokenize_function(examples, tokenizer):
     return data_dict
 
 def save_lora(trainer, model):
-  trainer.save_model("output")
+  print('before save pretrained output_lora')
   model.save_pretrained("output_lora")
+  print('before save model output')
+  trainer.save_model("output")
+  print('before load state dictionary')
   state_dict = get_fp32_state_dict_from_zero_checkpoint("output") # already on cpu
+  print('before get peft model state dict')
   d = get_peft_model_state_dict(model, state_dict=state_dict)
+  print('before save model')
   torch.save(d, "output_lora/adapter_model.bin")
 
 def train():
@@ -268,10 +273,11 @@ def train():
     trainer.train(resume_from_checkpoint = True)
     trainer.save_state()
     # safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
-    save_lora(trainer, model)
-
     # another save just in case
     model.save_pretrained("lora2")
+    print('saved lora2')
+    save_lora(trainer, model)
+
 
 
 if __name__ == "__main__":
