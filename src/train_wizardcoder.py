@@ -26,6 +26,8 @@ from torch.utils.data import Dataset
 from transformers import Trainer
 from datasets import load_dataset
 import utils
+from deepspeed.utils.zero_to_fp32 import get_fp32_state_dict_from_zero_checkpoint
+from peft import get_peft_model_state_dict
 
 from peft import LoraConfig, TaskType, get_peft_model
 
@@ -189,6 +191,12 @@ def train_tokenize_function(examples, tokenizer):
     data_dict = preprocess(sources, targets, tokenizer)
     return data_dict
 
+def save_lora(trainer, model):
+  trainer.save_model("output")
+  model.save_pretrained("output_lora")
+  state_dict = get_fp32_state_dict_from_zero_checkpoint("output") # already on cpu
+  d = get_peft_model_state_dict(model, state_dict=state_dict)
+  torch.save(d, "output_lora/adapter_model.bin")
 
 def train():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
@@ -248,11 +256,17 @@ def train():
     model.is_parallelizable = True
     model.model_parallel = True
 
-    trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
+    trainer = Trainer(
+        model=model, 
+        tokenizer=tokenizer, 
+        args=training_args, 
+        **data_module
+    )
     model.config.use_cache = False
-    trainer.train()
+    trainer.train(resume_from_checkpoint = True)
     trainer.save_state()
-    safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
+    # safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
+    save_lora(trainer, model)
 
 
 if __name__ == "__main__":
