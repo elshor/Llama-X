@@ -213,11 +213,6 @@ def train():
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
     )
-    print(training_args.local_rank, '... model loaded. Now trasforming to  peft')
-    model = get_peft_model(model, peft_config)
-    model.print_trainable_parameters()
-
-
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
@@ -272,13 +267,6 @@ def train():
     model.config.use_cache = False
     trainer.train(resume_from_checkpoint = True)
     trainer.save_state()
-    # safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
-    # another save just in case
-    model.save_pretrained("lora2")
-    print('saved lora2')
-    save_lora(trainer, model)
-
-
-
+    safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
 if __name__ == "__main__":
     train()
