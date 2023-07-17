@@ -9,7 +9,14 @@
         "stage3_param_persistence_threshold": "auto",
         "stage3_max_live_parameters": 0,
         "stage3_max_reuse_distance": 0,
-        "stage3_gather_16bit_weights_on_model_save": true
+        "stage3_gather_16bit_weights_on_model_save": true,
+        "offload_param": {
+          "device": "cpu",
+          "pin_memory": true,
+          "buffer_count": 5,
+          "buffer_size": 1e8,
+          "max_in_cpu": 1e9
+        }
     },
     "fp16": {
         "enabled": true,
