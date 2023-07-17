@@ -268,6 +268,9 @@ def train():
     # safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
     save_lora(trainer, model)
 
+    # another save just in case
+    model.save_pretrained("lora2")
+
 
 if __name__ == "__main__":
     train()
