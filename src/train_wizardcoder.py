@@ -81,6 +81,8 @@ class TrainingArguments(transformers.TrainingArguments):
         default=512,
         metadata={"help": "Maximum sequence length. Sequences will be right padded (and possibly truncated)."},
     )
+    log_on_each_node = False
+    report_to = 'wandb'
 
 
 def safe_save_model_for_hf_trainer(trainer: transformers.Trainer, output_dir: str):
