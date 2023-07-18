@@ -265,7 +265,7 @@ def train():
         **data_module
     )
     model.config.use_cache = False
-    trainer.train(resume_from_checkpoint = False)
+    trainer.train(resume_from_checkpoint = True)
     trainer.save_model("/root/n5/model/output")
     trainer.save_state()
     safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
